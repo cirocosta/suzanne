@@ -1,0 +1,31 @@
+sudo: false
+language: cpp
+compiler:
+  - gcc
+  - clang
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.6
+      - kalakris-cmake
+    packages:
+      - cmake
+      - gcc-4.9
+      - g++-4.9
+      - clang-3.6
+      - m4
+      - valgrind
+
+before_script:
+  - mkdir build
+  - cd build
+  - cmake -Dtest=ON ..
+  - make
+
+script:
+  - valgrind --leak-check=yes --error-exitcode=1 ./tests/dummy_test
+
+notifications:
+  email: false
+
