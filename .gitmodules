@@ -1,0 +1,9 @@
+[submodule "lib/yahttp-client"]
+	path = lib/yahttp-client
+	url = https://github.com/cirocosta/yahttp-client.git
+[submodule "lib/yahtml-parser"]
+	path = lib/yahtml-parser
+	url = https://github.com/cirocosta/yahtml-parser.git
+[submodule "lib/yacss-parser"]
+	path = lib/yacss-parser
+	url = https://github.com/cirocosta/yacss-parser.git

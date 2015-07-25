@@ -7,8 +7,6 @@ set(PROJECT_NAME yabrowser)
 project(${PROJECT_NAME} C CXX)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-register")
-
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
@@ -21,9 +19,22 @@ else()
     message(STATUS "Please use a different C++ compiler.")
 endif()
 
-include_directories(${PROJECT_SOURCE_DIR}/includes)
 
+#     --    dependencies
+
+add_subdirectory(lib/)
+include_directories(
+  ${yahtml-parser_SOURCE_DIR}/includes
+  ${yacss-parser_SOURCE_DIR}/includes
+  ${yahttp-client_SOURCE_DIR}/includes
+)
+
+#     --    source
+
+include_directories(${PROJECT_SOURCE_DIR}/includes)
 add_subdirectory(src/)
+
+#     --    testing
 
 if (test)
   enable_testing()
