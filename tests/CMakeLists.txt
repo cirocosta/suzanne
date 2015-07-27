@@ -21,9 +21,9 @@ set_target_properties(libgtest PROPERTIES
 include_directories("${source_dir}/include")
 
 
-#  --  DUMMY
+#  --  StyleTree
 
-add_executable(dummy_test main_test.cc dummy_test.cc)
-target_link_libraries(dummy_test libgtest)
-add_test(NAME dummy_test COMMAND dummy_test)
+add_executable(styletree_test main_test.cc styletree_test.cc)
+target_link_libraries(styletree_test libgtest)
+add_test(NAME styletree_test COMMAND styletree_test)
 
