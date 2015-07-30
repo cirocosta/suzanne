@@ -31,13 +31,13 @@ TEST(SelectorMatches, SimpleMath) {
 
   ASSERT_EQ(cssdriver.result, 0);
   ASSERT_EQ(cssdriver.stylesheet.rules.size(), 2);
-  ASSERT_EQ(cssdriver.stylesheet.rules[0].selectors.size(), 1);
-  yacss::Selector* h1_sel = &(cssdriver.stylesheet.rules[0].selectors[0]);
+  ASSERT_EQ(cssdriver.stylesheet.rules[0]->selectors.size(), 1);
+  yacss::Selector* h1_sel = &(cssdriver.stylesheet.rules[0]->selectors[0]);
   EXPECT_EQ(selector_matches(*h1_sel, *h1_elem), true);
 
 
-  ASSERT_EQ(cssdriver.stylesheet.rules[1].selectors.size(), 1);
-  yacss::Selector* h2_sel = &(cssdriver.stylesheet.rules[1].selectors[0]);
+  ASSERT_EQ(cssdriver.stylesheet.rules[1]->selectors.size(), 1);
+  yacss::Selector* h2_sel = &(cssdriver.stylesheet.rules[1]->selectors[0]);
   EXPECT_EQ(selector_matches(*h2_sel, *h1_elem), false);
 }
 
@@ -86,12 +86,12 @@ TEST(SelectorMatches, MultipleSelectors) {
   ASSERT_EQ(cssdriver.stylesheet.rules.size(), 3);
 
   // grab those selectors
-  ASSERT_EQ(cssdriver.stylesheet.rules[0].selectors.size(), 1);
-  yacss::Selector* class_sel = &(cssdriver.stylesheet.rules[0].selectors[0]);
-  ASSERT_EQ(cssdriver.stylesheet.rules[1].selectors.size(), 1);
-  yacss::Selector* h1_sel = &(cssdriver.stylesheet.rules[1].selectors[0]);
-  ASSERT_EQ(cssdriver.stylesheet.rules[2].selectors.size(), 1);
-  yacss::Selector* h2_sel = &(cssdriver.stylesheet.rules[2].selectors[0]);
+  ASSERT_EQ(cssdriver.stylesheet.rules[0]->selectors.size(), 1);
+  yacss::Selector* class_sel = &(cssdriver.stylesheet.rules[0]->selectors[0]);
+  ASSERT_EQ(cssdriver.stylesheet.rules[1]->selectors.size(), 1);
+  yacss::Selector* h1_sel = &(cssdriver.stylesheet.rules[1]->selectors[0]);
+  ASSERT_EQ(cssdriver.stylesheet.rules[2]->selectors.size(), 1);
+  yacss::Selector* h2_sel = &(cssdriver.stylesheet.rules[2]->selectors[0]);
 
   EXPECT_EQ(selector_matches(*h1_sel, *h1), true);
   EXPECT_EQ(selector_matches(*class_sel, *h1), true);
@@ -147,22 +147,22 @@ TEST(RulesMatcher, OneRuleMultipleSelectors) {
   ASSERT_EQ(cssdriver.stylesheet.rules.size(), 3);
 
   // grab those rules
-  ASSERT_EQ(cssdriver.stylesheet.rules[0].selectors.size(), 2);
-  yacss::Rule* tags_rule = &cssdriver.stylesheet.rules[0];
-  ASSERT_EQ(cssdriver.stylesheet.rules[1].selectors.size(), 1);
-  yacss::Rule* class_rule = &cssdriver.stylesheet.rules[1];
-  ASSERT_EQ(cssdriver.stylesheet.rules[2].selectors.size(), 2);
-  yacss::Rule* tag_w_class_rule = &cssdriver.stylesheet.rules[2];
+  ASSERT_EQ(cssdriver.stylesheet.rules[0]->selectors.size(), 2);
+  yacss::RulePtr tags_rule = cssdriver.stylesheet.rules[0];
+  ASSERT_EQ(cssdriver.stylesheet.rules[1]->selectors.size(), 1);
+  yacss::RulePtr class_rule = cssdriver.stylesheet.rules[1];
+  ASSERT_EQ(cssdriver.stylesheet.rules[2]->selectors.size(), 2);
+  yacss::RulePtr tag_w_class_rule = cssdriver.stylesheet.rules[2];
 
   // expect they all match (specificity changes only)
-  EXPECT_NE(rule_matches(*tags_rule, *h1).first, nullptr);
-  EXPECT_NE(rule_matches(*tags_rule, *h2).first, nullptr);
+  EXPECT_NE(rule_matches(tags_rule, *h1).first, nullptr);
+  EXPECT_NE(rule_matches(tags_rule, *h2).first, nullptr);
 
-  EXPECT_NE(rule_matches(*class_rule, *h1).first, nullptr);
-  EXPECT_NE(rule_matches(*class_rule, *h2).first, nullptr);
+  EXPECT_NE(rule_matches(class_rule, *h1).first, nullptr);
+  EXPECT_NE(rule_matches(class_rule, *h2).first, nullptr);
 
-  EXPECT_NE(rule_matches(*tag_w_class_rule, *h1).first, nullptr);
-  EXPECT_NE(rule_matches(*tag_w_class_rule, *h2).first, nullptr);
+  EXPECT_NE(rule_matches(tag_w_class_rule, *h1).first, nullptr);
+  EXPECT_NE(rule_matches(tag_w_class_rule, *h2).first, nullptr);
 }
 
 TEST(MatchingRules, OneRuleMultipleSelectors) {
@@ -210,12 +210,12 @@ TEST(MatchingRules, OneRuleMultipleSelectors) {
   yacss::Stylesheet* stylesheet = &cssdriver.stylesheet;
 
   // grab some rules
-  ASSERT_EQ(cssdriver.stylesheet.rules[0].selectors.size(), 2);
-  yacss::Rule* tags_rule = &cssdriver.stylesheet.rules[0];
-  ASSERT_EQ(cssdriver.stylesheet.rules[1].selectors.size(), 1);
-  yacss::Rule* class_rule = &cssdriver.stylesheet.rules[1];
-  ASSERT_EQ(cssdriver.stylesheet.rules[2].selectors.size(), 2);
-  yacss::Rule* tag_w_class_rule = &cssdriver.stylesheet.rules[2];
+  ASSERT_EQ(cssdriver.stylesheet.rules[0]->selectors.size(), 2);
+  yacss::RulePtr tags_rule = cssdriver.stylesheet.rules[0];
+  ASSERT_EQ(cssdriver.stylesheet.rules[1]->selectors.size(), 1);
+  yacss::RulePtr class_rule = cssdriver.stylesheet.rules[1];
+  ASSERT_EQ(cssdriver.stylesheet.rules[2]->selectors.size(), 2);
+  yacss::RulePtr tag_w_class_rule = cssdriver.stylesheet.rules[2];
 
   // match rules with elements
   std::vector<MatchedRule> body_rules = matching_rules(*stylesheet, *body);
@@ -226,8 +226,8 @@ TEST(MatchingRules, OneRuleMultipleSelectors) {
   EXPECT_EQ(h1_rules.size(), 3);
   EXPECT_EQ(h2_rules.size(), 3);
 
-  /* EXPECT_EQ(h1_rules[0].first.get(), tags_rule); */
-  /* EXPECT_EQ(h1_rules[1].first.get(), class_rule); */
-  /* EXPECT_EQ(h1_rules[2].first.get(), tag_w_class_rule); */
+  EXPECT_EQ(h1_rules[0].first, tags_rule);
+  EXPECT_EQ(h1_rules[1].first, class_rule);
+  EXPECT_EQ(h1_rules[2].first, tag_w_class_rule);
 }
 

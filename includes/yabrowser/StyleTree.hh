@@ -12,17 +12,14 @@
 
 namespace yabrowser { namespace style {
 
-class StyledNode;
-class Value;
+/* class StyledNode; */
+/* class Value; */
 
-typedef std::shared_ptr<Value> ValuePtr;
-typedef std::shared_ptr<StyledNode> StyledNodePtr;
-typedef std::shared_ptr<yacss::Rule> RulePtr;
-
-typedef std::pair<RulePtr, unsigned> MatchedRule;
+/* typedef std::shared_ptr<StyledNode> StyledNodePtr; */
+typedef std::pair<yacss::RulePtr, unsigned> MatchedRule;
 
 bool selector_matches(const yacss::Selector&, const yahtml::Element&);
-MatchedRule rule_matches (const yacss::Rule&, const yahtml::Element&);
+MatchedRule rule_matches (const yacss::RulePtr&, const yahtml::Element&);
 std::vector<MatchedRule> matching_rules (const yacss::Stylesheet&,
                                          const yahtml::Element&);
 struct MatchedRuleLesser
@@ -34,13 +31,13 @@ struct MatchedRuleLesser
 };
 
 
-class StyledNode
-{
-public:
-  std::shared_ptr<yahtml::Node> node;
-  std::map<std::string, ValuePtr> specified_values;
-  std::vector<StyledNodePtr> children;
-};
+/* class StyledNode */
+/* { */
+/* public: */
+/*   std::shared_ptr<yahtml::Node> node; */
+/*   /1* std::map<std::string, ValuePtr> specified_values; *1/ */
+/*   std::vector<StyledNodePtr> children; */
+/* }; */
 
 }}; // ! ns yabrowser style
 

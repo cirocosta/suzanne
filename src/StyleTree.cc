@@ -28,11 +28,11 @@ bool selector_matches (const yacss::Selector& sel, const yahtml::Element& elem)
   return true;
 }
 
-MatchedRule rule_matches (const yacss::Rule& rule, const yahtml::Element& elem)
+MatchedRule rule_matches (const yacss::RulePtr& rule, const yahtml::Element& elem)
 {
-  for (const auto& selector : rule.selectors)
+  for (const auto& selector : rule->selectors)
     if (selector_matches(selector, elem))
-      return MatchedRule {std::make_shared<yacss::Rule>(rule), selector.specificity};
+      return MatchedRule {rule, selector.specificity};
 
   return MatchedRule {nullptr, 0};
 }
