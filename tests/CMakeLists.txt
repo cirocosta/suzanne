@@ -23,7 +23,9 @@ include_directories("${source_dir}/include")
 
 #  --  StyleTree
 
+include_directories(${yabrowser_INCLUDES})
+
 add_executable(styletree_test main_test.cc styletree_test.cc)
-target_link_libraries(styletree_test libgtest)
+target_link_libraries(styletree_test libgtest ${yabrowser_LIBS})
 add_test(NAME styletree_test COMMAND styletree_test)
 

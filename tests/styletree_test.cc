@@ -11,8 +11,7 @@ TEST(SelectorMatches, Simple) {
 
   const char* html_source =
     "<h1>"
-    "</h1>"
-    "";
+    "</h1>";
 
   const char* css_source =
     "h1 {"

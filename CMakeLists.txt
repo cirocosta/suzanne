@@ -23,16 +23,32 @@ endif()
 #     --    dependencies
 
 add_subdirectory(lib/)
-include_directories(
-  ${yahtml-parser_SOURCE_DIR}/includes
-  ${yacss-parser_SOURCE_DIR}/includes
-  ${yahttp-client_SOURCE_DIR}/includes
+set(INCLUDES
+    ${yahtml-parser_INCLUDES}
+    ${yacss-parser_INCLUDES}
+    ${yahttp-parser_INCLUDES}
+    ${PROJECT_SOURCE_DIR}/includes
 )
 
 #     --    source
 
-include_directories(${PROJECT_SOURCE_DIR}/includes)
 add_subdirectory(src/)
+
+
+#     --    global variables
+
+set(${PROJECT_NAME}_INCLUDES ${INCLUDES}
+    CACHE INTERNAL
+    "${PROJECT_NAME}: Include Directories"
+    FORCE
+)
+
+set(${PROJECT_NAME}_LIBS ${LIBS}
+    CACHE INTERNAL
+    "${PROJECT_NAME}: Link Libraries"
+    FORCE
+)
+
 
 #     --    testing
 
