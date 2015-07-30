@@ -2,6 +2,9 @@
 
 namespace yabrowser { namespace style {
 
+  using namespace yacss;
+  using namespace yahtml;
+
 bool selector_matches (const yacss::Selector& sel, const yahtml::Element& elem)
 {
   yahtml::AttrMap::const_iterator it;
@@ -37,7 +40,7 @@ MatchedRule rule_matches (const yacss::RulePtr& rule, const yahtml::Element& ele
   return MatchedRule {nullptr, 0};
 }
 
-std::vector<MatchedRule> matching_rules (const yacss::Stylesheet& ss,
+std::vector<MatchedRule> matching_rules (const Stylesheet& ss,
                                          const yahtml::Element& elem)
 {
   std::vector<MatchedRule> rules_matched;
@@ -54,6 +57,18 @@ std::vector<MatchedRule> matching_rules (const yacss::Stylesheet& ss,
   std::sort(rules_matched.begin(), rules_matched.end(), MatchedRuleLesser());
 
   return rules_matched;
+}
+
+DeclarationContainer compute_specified_values (const Stylesheet& ss,
+                                               const Element& elem)
+{
+  DeclarationContainer spec_values;
+
+  for (const auto& matched_rule : matching_rules(ss, elem))
+    for (const auto& decl : matched_rule.first->declarations)
+      spec_values[decl.first] = decl.second;
+
+  return spec_values;
 }
 
 }}; // ! ns yabrowser style

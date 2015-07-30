@@ -4,6 +4,8 @@
 #include "yabrowser/StyleTree.hh"
 
 using namespace yabrowser::style;
+using namespace yacss;
+using namespace yahtml;
 
 TEST(SelectorMatches, SimpleMath) {
   yahtml::HTMLDriver htmldriver;
@@ -229,5 +231,62 @@ TEST(MatchingRules, OneRuleMultipleSelectors) {
   EXPECT_EQ(h1_rules[0].first, tags_rule);
   EXPECT_EQ(h1_rules[1].first, class_rule);
   EXPECT_EQ(h1_rules[2].first, tag_w_class_rule);
+
+  EXPECT_EQ(h2_rules[0].first, tags_rule);
+  EXPECT_EQ(h2_rules[1].first, class_rule);
+  EXPECT_EQ(h2_rules[2].first, tag_w_class_rule);
 }
 
+TEST(SpecifiedValues, ClassSelector) {
+  yahtml::HTMLDriver htmldriver;
+  yacss::CSSDriver cssdriver;
+
+  const char* html_source =
+    "<body>"
+      "<h1 class=\"header\">"
+      "</h1>"
+      "<h2 class=\"header\">"
+      "</h2>"
+    "</body>";
+
+  const char* css_source =
+    ".header {"
+      "color: green;"
+    "}";
+
+  htmldriver.parse_source(html_source);
+  cssdriver.parse_source(css_source);
+
+  // html parsed
+  ASSERT_EQ(htmldriver.result, 0);
+  ASSERT_EQ(htmldriver.dom->type, yahtml::NodeType::Element);
+  yahtml::Element* body = dynamic_cast<yahtml::Element*>(htmldriver.dom.get());
+
+  // grab the elements
+  ASSERT_EQ(body->children.size(), 2);
+  yahtml::Element* h1 = dynamic_cast<yahtml::Element*>(body->children[0].get());
+  yahtml::Element* h2 = dynamic_cast<yahtml::Element*>(body->children[1].get());
+
+  // css parsed
+  ASSERT_EQ(cssdriver.result, 0);
+  ASSERT_EQ(cssdriver.stylesheet.rules.size(), 1);
+  yacss::Stylesheet* stylesheet = &cssdriver.stylesheet;
+
+  // grab some rules
+  ASSERT_EQ(cssdriver.stylesheet.rules[0]->selectors.size(), 1);
+  yacss::RulePtr class_rule = cssdriver.stylesheet.rules[0];
+  ASSERT_EQ(class_rule->selectors[0].classes.size(), 1);
+  ASSERT_EQ(class_rule->selectors[0].classes[0], "header");
+
+  // match rules with elements
+  ASSERT_EQ(matching_rules(*stylesheet, *body).size(), 0);
+  ASSERT_EQ(matching_rules(*stylesheet, *h1).size(), 1);
+  ASSERT_EQ(matching_rules(*stylesheet, *h2).size(), 1);
+
+  // compute specified values
+  DeclarationContainer h1_decls = compute_specified_values(*stylesheet, *h1);
+  DeclarationContainer h2_decls = compute_specified_values(*stylesheet, *h2);
+
+  EXPECT_EQ(h1_decls["color"], "green");
+  EXPECT_EQ(h2_decls["color"], "green");
+}

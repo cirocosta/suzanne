@@ -12,16 +12,20 @@
 
 namespace yabrowser { namespace style {
 
-/* class StyledNode; */
-/* class Value; */
-
-/* typedef std::shared_ptr<StyledNode> StyledNodePtr; */
 typedef std::pair<yacss::RulePtr, unsigned> MatchedRule;
+typedef std::map<std::string, std::string> SpecifiedValues;
 
 bool selector_matches(const yacss::Selector&, const yahtml::Element&);
+
 MatchedRule rule_matches (const yacss::RulePtr&, const yahtml::Element&);
+
 std::vector<MatchedRule> matching_rules (const yacss::Stylesheet&,
                                          const yahtml::Element&);
+
+yacss::DeclarationContainer compute_specified_values (
+    const yacss::Stylesheet&, const yahtml::Element&
+);
+
 struct MatchedRuleLesser
 {
   inline bool operator()(const MatchedRule& lhs, const MatchedRule& rhs) const
@@ -29,15 +33,6 @@ struct MatchedRuleLesser
     return lhs.second < rhs.second;
   }
 };
-
-
-/* class StyledNode */
-/* { */
-/* public: */
-/*   std::shared_ptr<yahtml::Node> node; */
-/*   /1* std::map<std::string, ValuePtr> specified_values; *1/ */
-/*   std::vector<StyledNodePtr> children; */
-/* }; */
 
 }}; // ! ns yabrowser style
 
