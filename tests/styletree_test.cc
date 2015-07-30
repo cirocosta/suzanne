@@ -250,6 +250,11 @@ TEST(SpecifiedValues, ClassSelector) {
     "</body>";
 
   const char* css_source =
+    "h1 {"
+    " color: black;"
+    " width: 300px;"
+    "}"
+
     ".header {"
       "color: green;"
     "}";
@@ -269,24 +274,30 @@ TEST(SpecifiedValues, ClassSelector) {
 
   // css parsed
   ASSERT_EQ(cssdriver.result, 0);
-  ASSERT_EQ(cssdriver.stylesheet.rules.size(), 1);
+  ASSERT_EQ(cssdriver.stylesheet.rules.size(), 2);
   yacss::Stylesheet* stylesheet = &cssdriver.stylesheet;
 
   // grab some rules
   ASSERT_EQ(cssdriver.stylesheet.rules[0]->selectors.size(), 1);
-  yacss::RulePtr class_rule = cssdriver.stylesheet.rules[0];
-  ASSERT_EQ(class_rule->selectors[0].classes.size(), 1);
+  ASSERT_EQ(cssdriver.stylesheet.rules[1]->selectors.size(), 1);
+  yacss::RulePtr tag_rule = cssdriver.stylesheet.rules[0];
+  yacss::RulePtr class_rule = cssdriver.stylesheet.rules[1];
+  ASSERT_EQ(tag_rule->selectors[0].tag, "h1");
   ASSERT_EQ(class_rule->selectors[0].classes[0], "header");
 
   // match rules with elements
   ASSERT_EQ(matching_rules(*stylesheet, *body).size(), 0);
-  ASSERT_EQ(matching_rules(*stylesheet, *h1).size(), 1);
+  ASSERT_EQ(matching_rules(*stylesheet, *h1).size(), 2);
   ASSERT_EQ(matching_rules(*stylesheet, *h2).size(), 1);
 
   // compute specified values
   DeclarationContainer h1_decls = compute_specified_values(*stylesheet, *h1);
   DeclarationContainer h2_decls = compute_specified_values(*stylesheet, *h2);
 
+  EXPECT_EQ(h1_decls.size(), 2);
   EXPECT_EQ(h1_decls["color"], "green");
+  EXPECT_EQ(h1_decls["width"], "300px");
+
+  EXPECT_EQ(h2_decls.size(), 1);
   EXPECT_EQ(h2_decls["color"], "green");
 }
