@@ -24,8 +24,7 @@ StyledNode::StyledNode (const DOMChild root, const Stylesheet& ss)
 }
 
 StyledNode::~StyledNode ()
-{
-}
+{ }
 
 bool selector_matches (const yacss::Selector& sel, const yahtml::Element& elem)
 {
