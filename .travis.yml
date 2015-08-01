@@ -38,7 +38,8 @@ before_script:
   - make
 
 script:
-  - valgrind --leak-check=yes --error-exitcode=1 ./tests/dummy_test
+  - valgrind --leak-check=yes --error-exitcode=1 ./tests/styletree_test
+  - valgrind --leak-check=yes --error-exitcode=1 ./tests/stylednode_test
 
 notifications:
   email: false
