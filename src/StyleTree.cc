@@ -2,8 +2,30 @@
 
 namespace yabrowser { namespace style {
 
-  using namespace yacss;
-  using namespace yahtml;
+using namespace yacss;
+using namespace yahtml;
+
+StyledNode::StyledNode (const DOMChild root, const Stylesheet& ss)
+{
+  node = root;
+
+  if (root->type == NodeType::Element) {
+    Element* elem = static_cast<yahtml::Element*>(root.get());
+    specified_values = compute_specified_values(ss, *elem);
+  } else {
+    specified_values = DeclarationContainer {};
+  }
+
+  // recursively construct the styled tree
+  for (const auto& child : root->children) {
+    StyledNode sn (child, ss);
+    children.push_back(std::make_shared<StyledNode>(sn));
+  }
+}
+
+StyledNode::~StyledNode ()
+{
+}
 
 bool selector_matches (const yacss::Selector& sel, const yahtml::Element& elem)
 {

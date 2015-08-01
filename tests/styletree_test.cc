@@ -295,9 +295,9 @@ TEST(SpecifiedValues, ClassSelector) {
   DeclarationContainer h2_decls = compute_specified_values(*stylesheet, *h2);
 
   EXPECT_EQ(h1_decls.size(), 2);
-  EXPECT_EQ(h1_decls["color"], "green");
-  EXPECT_EQ(h1_decls["width"], "300px");
+  EXPECT_EQ(h1_decls["color"].get<KeywordValue>().val, "green");
+  EXPECT_EQ(h1_decls["width"].get<LengthValue>().val, 300);
 
   EXPECT_EQ(h2_decls.size(), 1);
-  EXPECT_EQ(h2_decls["color"], "green");
+  EXPECT_EQ(h2_decls["color"].get<KeywordValue>().val, "green");
 }
