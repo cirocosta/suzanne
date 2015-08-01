@@ -7,7 +7,7 @@ using namespace yabrowser;
 using namespace yabrowser::style;
 using namespace yacss;
 
-TEST(StyledTree, SingleNodeStyleTree) {
+TEST(StyledNode, SingleNodeStyleTree) {
   yahtml::HTMLDriver htmldriver;
   yacss::CSSDriver cssdriver;
 
@@ -42,7 +42,7 @@ TEST(StyledTree, SingleNodeStyleTree) {
   ASSERT_EQ(sn.children[0]->node->type, yahtml::NodeType::Text);
 }
 
-TEST(StyledTree, TreeWithClassSelector) {
+TEST(StyledNode, TreeWithClassSelector) {
   yahtml::HTMLDriver htmldriver;
   yacss::CSSDriver cssdriver;
 
@@ -105,5 +105,41 @@ TEST(StyledTree, TreeWithClassSelector) {
   ASSERT_EQ(h2_style->children.size(), 1);
   StyledChild& h2_text_style = h2_style->children.at(0);
   EXPECT_EQ(h2_text_style->specified_values.size(), 0);
+}
+
+TEST(StyledNode, GetExistingValue) {
+  yahtml::HTMLDriver htmldriver;
+  yacss::CSSDriver cssdriver;
+
+  const char* html_source =
+    "<body>"
+      "<h1 class=\"header\">"
+        "cool header 1 text"
+      "</h1>"
+    "</body>";
+
+  const char* css_source =
+    "h1 {"
+    " color: black;"
+    " width: 300px;"
+    "}"
+
+    ".header {"
+      "color: green;"
+    "}";
+
+  htmldriver.parse_source(html_source);
+  cssdriver.parse_source(css_source);
+  ASSERT_EQ(htmldriver.result, 0);
+  ASSERT_EQ(cssdriver.result, 0);
+
+  ::StyledNode sn (htmldriver.dom, cssdriver.stylesheet);
+
+  // h1
+  StyledChild& h1_style = sn.children.at(0);
+  ASSERT_EQ(h1_style->specified_values.size(), 2);
+  EXPECT_EQ(h1_style->get_value<KeywordValue>("color")->val, "green");
+  EXPECT_EQ(h1_style->get_value<LengthValue>("width")->val, 300);
+  EXPECT_EQ(h1_style->get_value<LengthValue>("lol"), nullptr);
 }
 

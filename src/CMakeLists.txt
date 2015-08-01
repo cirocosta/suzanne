@@ -3,7 +3,7 @@ message(MY_INCS ${INCLUDES})
 
 add_executable(main main.cc)
 
-add_library(yabrowserlib StyleTree.cc)
+add_library(yabrowserlib StyleTree.cc Layout.cc)
 target_link_libraries(yabrowserlib
   ${yahtml-parser_LIBS}
   ${yacss-parser_LIBS}

@@ -28,6 +28,16 @@ public:
 public:
   StyledNode(const yahtml::DOMChild root, const yacss::Stylesheet& ss);
   ~StyledNode();
+
+  template<typename T>
+  inline const T* get_value (const std::string& name) const
+  {
+    yacss::DeclarationContainer::const_iterator it = specified_values.find(name);
+    if (it == specified_values.end())
+      return nullptr;
+
+    return &it->second.get<T>();
+  }
 };
 
 bool selector_matches(const yacss::Selector&, const yahtml::Element&);
@@ -48,7 +58,6 @@ struct MatchedRuleLesser
     return lhs.second < rhs.second;
   }
 };
-
 
 }}; // ! ns yabrowser style
 
