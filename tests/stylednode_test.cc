@@ -143,3 +143,42 @@ TEST(StyledNode, GetExistingValue) {
   EXPECT_EQ(h1_style->get_value<LengthValue>("lol"), nullptr);
 }
 
+TEST(StyledNode, Display) {
+  yahtml::HTMLDriver htmldriver;
+  yacss::CSSDriver cssdriver;
+
+  const char* html_source =
+    "<body>"
+      "<h1 class=\"header\">"
+        "cool header 1 text"
+      "</h1>"
+      "<div>"
+      "</div>"
+    "</body>";
+
+  const char* css_source =
+    "h1 {"
+      "display: block;"
+    "}"
+
+    "div {"
+      "display: none;"
+    "}";
+
+  htmldriver.parse_source(html_source);
+  cssdriver.parse_source(css_source);
+  ASSERT_EQ(htmldriver.result, 0);
+  ASSERT_EQ(cssdriver.result, 0);
+
+  ::StyledNode sn (htmldriver.dom, cssdriver.stylesheet);
+
+  // h1
+  StyledChild& h1_style = sn.children.at(0);
+  StyledChild& h1_text_style = h1_style->children.at(0);
+  StyledChild& div_style = sn.children.at(1);
+
+  EXPECT_EQ(h1_style->display, DISPLAY_BLOCK);
+  EXPECT_EQ(h1_text_style->display, DISPLAY_INLINE);
+  EXPECT_EQ(div_style->display, DISPLAY_NONE);
+}
+

@@ -12,8 +12,26 @@ StyledNode::StyledNode (const DOMChild root, const Stylesheet& ss)
   if (root->type == NodeType::Element) {
     Element* elem = static_cast<yahtml::Element*>(root.get());
     specified_values = compute_specified_values(ss, *elem);
+    const auto it = specified_values.find("display");
+
+    if (it == specified_values.end()) {
+      display = DISPLAY_INLINE;
+    } else {
+      std::string disp = it->second.get<KeywordValue>().val;
+
+      if (disp == "inline") {
+        display = DISPLAY_INLINE;
+      } else if (disp == "block") {
+        display = DISPLAY_BLOCK;
+      } else if (disp == "none") {
+        display = DISPLAY_NONE;
+      } else {
+        throw std::runtime_error("Unknown Display value.");
+      }
+    }
   } else {
     specified_values = DeclarationContainer {};
+    display = DISPLAY_INLINE;
   }
 
   // recursively construct the styled tree

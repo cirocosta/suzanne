@@ -18,6 +18,11 @@ typedef std::pair<yacss::RulePtr, unsigned> MatchedRule;
 typedef std::shared_ptr<StyledNode> StyledChild;
 typedef std::vector<StyledChild> StyledChildren;
 
+enum Display
+{
+  DISPLAY_NONE, DISPLAY_INLINE, DISPLAY_BLOCK
+};
+
 
 class StyledNode
 {
@@ -25,6 +30,7 @@ public:
   yahtml::DOMChild node;
   yacss::DeclarationContainer specified_values;
   StyledChildren children;
+  Display display;
 public:
   StyledNode(const yahtml::DOMChild root, const yacss::Stylesheet& ss);
   ~StyledNode();
