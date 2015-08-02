@@ -90,8 +90,8 @@ TEST(Layout, SimpleAnonymous) {
 
   const char* html_source =
     "<body>"
-      "<h1></h1>"
       "<span></span>"
+      "<h1></h1>"
     "</body>";
 
 
@@ -106,7 +106,19 @@ TEST(Layout, SimpleAnonymous) {
   ::StyledNode sn (htmldriver.dom, cssdriver.stylesheet);
   LayoutBox body_layout (sn);
 
-  EXPECT_EQ(body_layout.children.size(), 2);
-  // TODO expectations for anon
+  ASSERT_EQ(body_layout.type, BoxType::BlockNode);
+  ASSERT_EQ(body_layout.children.size(), 2);
+
+  LayoutBoxPtr& span_layout = body_layout.children.at(0);
+  LayoutBoxPtr& h1_layout = body_layout.children.at(1);
+
+  // span
+  EXPECT_EQ(span_layout->type, BoxType::AnonymousBlock);
+  EXPECT_EQ(span_layout->children.size(), 1);
+
+  // h1
+  EXPECT_EQ(h1_layout->type, BoxType::BlockNode);
+  EXPECT_EQ(h1_layout->children.size(), 1);
+  EXPECT_EQ(h1_layout->children.at(0)->type, BoxType::InlineNode);
 }
 
