@@ -115,10 +115,33 @@ TEST(Layout, SimpleAnonymous) {
   // span
   EXPECT_EQ(span_layout->type, BoxType::AnonymousBlock);
   EXPECT_EQ(span_layout->children.size(), 1);
+  EXPECT_EQ(span_layout->children.at(0)->type, BoxType::InlineNode);
 
   // h1
   EXPECT_EQ(h1_layout->type, BoxType::BlockNode);
   EXPECT_EQ(h1_layout->children.size(), 1);
   EXPECT_EQ(h1_layout->children.at(0)->type, BoxType::InlineNode);
+}
+
+
+TEST(Layout, AnonymousWithListInside) {
+  yahtml::HTMLDriver htmldriver;
+  yacss::CSSDriver cssdriver;
+
+  const char* html_source =
+    "<body>"
+      "<h1></h1>"
+      "<h2></h2>"
+      "huehue <strong>brbr</strong> huehue"
+    "</body>";
+
+
+  const char* css_source =
+    "body, h1 { display: block; }"
+    "span { display: inline; }";
+
+  htmldriver.parse_source(html_source);
+  cssdriver.parse_source(css_source);
+  ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
 }
 
