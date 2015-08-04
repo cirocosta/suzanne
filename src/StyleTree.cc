@@ -121,7 +121,7 @@ const std::initializer_list<std::string> keys, const CSSBaseValue& def) const
       return it->second;
   }
 
-  return def;
+  return CSSBaseValue(def);
 }
 
 }}; // ! ns yabrowser style

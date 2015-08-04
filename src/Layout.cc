@@ -65,17 +65,13 @@ LayoutBox::~LayoutBox ()
 
 void LayoutBox::calculate_block_width (const LayoutBox& parent)
 {
-  /* yacss::DeclarationContainer::const_iterator it; */
-  /* it = this->styled_node->specified_values.find("width"); */
-  /* if (it == this->styled_node->specified_values.end()) { */
-  /*   // auto */
-  /* } else { */
-  /*   // in pixels */
-  /* } */
+  /* const CSSBaseValue& width = */
+  /*   parent.styled_node->decl_lookup({"width"}, KeywordValue("auto")); */
+  /* const CSSBaseValue& margin_left = */
+  /*   parent.styled_node->decl_lookup({"margin-left"}, LengthValue(0, "px")); */
+  /* const CSSBaseValue& margin_right = */
+  /*   parent.styled_node->decl_lookup({"margin-left"}, LengthValue(0, "px")); */
 
-  /* LengthValue margin_left = styled_node->decl_lookup( */
-  /*     {"margin", "margin-left"}, LengthValue(0, "px") */
-  /* ); */
 }
 
 }}; // ! ns yabrowser layout

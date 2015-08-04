@@ -211,29 +211,36 @@ TEST(SpecifiedValues, DeclarationLookup) {
   StyledChild& h1_style = sn.children.at(0);
   StyledChild& h2_style = sn.children.at(1);
 
+  // default values
+  const CSSBaseValue zero_length = LengthValue(0, "px");
+  const CSSBaseValue auto_keyword = KeywordValue("auto");
+
+  // margin - both specified by the shorthand
   const CSSBaseValue& margin_left =
-    h1_style->decl_lookup({"margin", "margin-left"}, LengthValue(0, "px"));
+    h1_style->decl_lookup({"margin", "margin-left"}, zero_length);
 
   const CSSBaseValue& margin_right =
-    h1_style->decl_lookup({"margin", "margin-right"}, LengthValue(0, "px"));
+    h1_style->decl_lookup({"margin", "margin-right"}, zero_length);
 
   EXPECT_EQ(margin_left.get<LengthValue>().val, 10);
   EXPECT_EQ(margin_right.get<LengthValue>().val, 10);
 
-
+  //width - not specified in the first (keyword)
+  //      - specified in the second (length)
   const CSSBaseValue& h1_width =
-    h1_style->decl_lookup({"width"}, KeywordValue("auto"));
+    h1_style->decl_lookup({"width"}, auto_keyword);
   const CSSBaseValue& h2_width =
-    h2_style->decl_lookup({"width"}, KeywordValue("auto"));
+    h2_style->decl_lookup({"width"}, auto_keyword);
 
   EXPECT_EQ(h1_width.type, yacss::ValueType::Keyword);
   EXPECT_EQ(h1_width.get<KeywordValue>().val, "auto");
   EXPECT_EQ(h2_width.type, yacss::ValueType::Length);
 
+  // border - no shorthand specified. Only one (left) specified
   const CSSBaseValue& border_left =
-    h1_style->decl_lookup({"border", "border-left"}, LengthValue(0, "px"));
+    h1_style->decl_lookup({"border", "border-left"}, zero_length);
   const CSSBaseValue& border_right =
-    h1_style->decl_lookup({"border", "border-right"}, LengthValue(0, "px"));
+    h1_style->decl_lookup({"border", "border-right"}, zero_length);
 
   EXPECT_EQ(border_left.get<LengthValue>().val, 5);
   EXPECT_EQ(border_right.get<LengthValue>().val, 0);
