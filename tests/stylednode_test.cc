@@ -182,3 +182,60 @@ TEST(StyledNode, Display) {
   EXPECT_EQ(div_style->display, DISPLAY_NONE);
 }
 
+TEST(SpecifiedValues, DeclarationLookup) {
+  yahtml::HTMLDriver htmldriver;
+  yacss::CSSDriver cssdriver;
+
+  const char* html_source =
+    "<body>"
+      "<h1></h1>"
+      "<h2></h2>"
+    "</body>";
+
+  const char* css_source =
+    "h1 {"
+    " margin: 10px;"
+    " border-left: 5px;"
+    "}"
+
+    "h2 {"
+    " width: 10px;"
+    "}";
+
+  htmldriver.parse_source(html_source);
+  cssdriver.parse_source(css_source);
+  ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
+
+  ::StyledNode sn (htmldriver.dom, cssdriver.stylesheet);
+
+  StyledChild& h1_style = sn.children.at(0);
+  StyledChild& h2_style = sn.children.at(1);
+
+  const CSSBaseValue& margin_left =
+    h1_style->decl_lookup({"margin", "margin-left"}, LengthValue(0, "px"));
+
+  const CSSBaseValue& margin_right =
+    h1_style->decl_lookup({"margin", "margin-right"}, LengthValue(0, "px"));
+
+  EXPECT_EQ(margin_left.get<LengthValue>().val, 10);
+  EXPECT_EQ(margin_right.get<LengthValue>().val, 10);
+
+
+  const CSSBaseValue& h1_width =
+    h1_style->decl_lookup({"width"}, KeywordValue("auto"));
+  const CSSBaseValue& h2_width =
+    h2_style->decl_lookup({"width"}, KeywordValue("auto"));
+
+  EXPECT_EQ(h1_width.type, yacss::ValueType::Keyword);
+  EXPECT_EQ(h1_width.get<KeywordValue>().val, "auto");
+  EXPECT_EQ(h2_width.type, yacss::ValueType::Length);
+
+  const CSSBaseValue& border_left =
+    h1_style->decl_lookup({"border", "border-left"}, LengthValue(0, "px"));
+  const CSSBaseValue& border_right =
+    h1_style->decl_lookup({"border", "border-right"}, LengthValue(0, "px"));
+
+  EXPECT_EQ(border_left.get<LengthValue>().val, 5);
+  EXPECT_EQ(border_right.get<LengthValue>().val, 0);
+}
+

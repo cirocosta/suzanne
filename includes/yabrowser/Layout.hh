@@ -68,6 +68,7 @@ public:
 
   /* // block */
   /* void calculate_block_layout(const LayoutBox& parent); */
+  void calculate_block_width(const LayoutBox& parent);
   /* void calculate_block_position(const LayoutBox& parent); */
   /* void calculate_block_height(); */
 };

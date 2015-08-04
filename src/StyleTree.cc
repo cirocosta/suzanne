@@ -110,5 +110,19 @@ DeclarationContainer compute_specified_values (const Stylesheet& ss,
   return spec_values;
 }
 
+CSSBaseValue StyledNode::decl_lookup (
+const std::initializer_list<std::string> keys, const CSSBaseValue& def) const
+{
+  DeclarationContainer::const_iterator it;
+
+  for (const auto& key : keys) {
+    it = specified_values.find(key);
+    if (it != specified_values.end())
+      return it->second;
+  }
+
+  return def;
+}
+
 }}; // ! ns yabrowser style
 

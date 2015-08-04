@@ -301,3 +301,4 @@ TEST(SpecifiedValues, ClassSelector) {
   EXPECT_EQ(h2_decls.size(), 1);
   EXPECT_EQ(h2_decls["color"].get<KeywordValue>().val, "green");
 }
+

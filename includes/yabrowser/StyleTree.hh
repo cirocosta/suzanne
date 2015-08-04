@@ -4,6 +4,7 @@
 #include "yacss/CSS.hh"
 #include "yahtml/DOM.hh"
 
+#include <initializer_list>
 #include <vector>
 #include <memory>
 #include <utility>
@@ -44,6 +45,8 @@ public:
 
     return &it->second.get<T>();
   }
+
+  yacss::CSSBaseValue decl_lookup (const std::initializer_list<std::string>, const yacss::CSSBaseValue&) const;
 };
 
 bool selector_matches(const yacss::Selector&, const yahtml::Element&);

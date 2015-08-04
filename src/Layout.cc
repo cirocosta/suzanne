@@ -63,5 +63,20 @@ LayoutBox::~LayoutBox ()
 {
 }
 
+void LayoutBox::calculate_block_width (const LayoutBox& parent)
+{
+  /* yacss::DeclarationContainer::const_iterator it; */
+  /* it = this->styled_node->specified_values.find("width"); */
+  /* if (it == this->styled_node->specified_values.end()) { */
+  /*   // auto */
+  /* } else { */
+  /*   // in pixels */
+  /* } */
+
+  /* LengthValue margin_left = styled_node->decl_lookup( */
+  /*     {"margin", "margin-left"}, LengthValue(0, "px") */
+  /* ); */
+}
+
 }}; // ! ns yabrowser layout
 
