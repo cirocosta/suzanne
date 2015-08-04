@@ -65,12 +65,36 @@ LayoutBox::~LayoutBox ()
 
 void LayoutBox::calculate_block_width (const LayoutBox& parent)
 {
-  /* const CSSBaseValue& width = */
-  /*   parent.styled_node->decl_lookup({"width"}, KeywordValue("auto")); */
-  /* const CSSBaseValue& margin_left = */
-  /*   parent.styled_node->decl_lookup({"margin-left"}, LengthValue(0, "px")); */
-  /* const CSSBaseValue& margin_right = */
-  /*   parent.styled_node->decl_lookup({"margin-left"}, LengthValue(0, "px")); */
+  const CSSBaseValue zero_length = LengthValue(0, "px");
+  const CSSBaseValue auto_keyword = KeywordValue("auto");
+
+  const CSSBaseValue& width =
+    parent.styled_node->decl_lookup({"width"}, auto_keyword);
+
+  const CSSBaseValue& margin_left =
+    parent.styled_node->decl_lookup({"margin-left", "margin"}, zero_length);
+  const CSSBaseValue& margin_right =
+    parent.styled_node->decl_lookup({"margin-right", "margin"}, zero_length);
+
+  const CSSBaseValue& border_left =
+    parent.styled_node->decl_lookup({"border-left", "border"}, zero_length);
+  const CSSBaseValue& border_right =
+    parent.styled_node->decl_lookup({"border-right", "border"}, zero_length);
+
+  const CSSBaseValue& padding_left =
+    parent.styled_node->decl_lookup({"padding-left", "padding"}, zero_length);
+  const CSSBaseValue& padding_right =
+    parent.styled_node->decl_lookup({"padding-right", "padding"}, zero_length);
+
+  unsigned total_width =
+    to_px(width) + to_px(margin_left) + to_px(margin_right) +
+    to_px(border_left) + to_px(border_right) +
+    to_px(padding_left) + to_px(border_right);
+
+  // TODO continue here after improving CSSBaseValue comparison
+  //      and decl_lookup as a DeclarationContainer method
+  if (width.type != ValueType::Keyword && parent.dimensions.content.width) {
+  }
 
 }
 

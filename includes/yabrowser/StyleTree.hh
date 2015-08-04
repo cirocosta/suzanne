@@ -49,6 +49,15 @@ public:
   yacss::CSSBaseValue decl_lookup (const std::initializer_list<std::string>, const yacss::CSSBaseValue&) const;
 };
 
+inline unsigned to_px (const yacss::CSSBaseValue& value)
+{
+  if (value.type == yacss::ValueType::Length) {
+    return value.get<yacss::LengthValue>().val;
+  }
+
+  return 0;
+}
+
 bool selector_matches(const yacss::Selector&, const yahtml::Element&);
 
 MatchedRule rule_matches (const yacss::RulePtr&, const yahtml::Element&);
