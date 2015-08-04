@@ -27,8 +27,8 @@ TEST(Layout, SingleBlockElement) {
 
   ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
 
-  ::StyledNode sn (htmldriver.dom, cssdriver.stylesheet);
-  LayoutBox layout (sn);
+  LayoutBox layout (std::make_shared<StyledNode>(htmldriver.dom,
+                                                 cssdriver.stylesheet));
 
   EXPECT_EQ(layout.type, BoxType::BlockNode);
   EXPECT_EQ(layout.children.size(), 1);
@@ -60,8 +60,8 @@ TEST(Layout, BlockWithInlineList) {
 
   ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
 
-  ::StyledNode sn (htmldriver.dom, cssdriver.stylesheet);
-  LayoutBox ul_layout (sn);
+  LayoutBox ul_layout (std::make_shared<StyledNode>(htmldriver.dom,
+                                                 cssdriver.stylesheet));
 
   EXPECT_EQ(ul_layout.type, BoxType::BlockNode);
   EXPECT_EQ(ul_layout.children.size(), 2);
@@ -103,8 +103,8 @@ TEST(Layout, SimpleAnonymous) {
   cssdriver.parse_source(css_source);
   ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
 
-  ::StyledNode sn (htmldriver.dom, cssdriver.stylesheet);
-  LayoutBox body_layout (sn);
+  LayoutBox body_layout (std::make_shared<StyledNode>(htmldriver.dom,
+                                                 cssdriver.stylesheet));
 
   ASSERT_EQ(body_layout.type, BoxType::BlockNode);
   ASSERT_EQ(body_layout.children.size(), 2);
@@ -135,7 +135,6 @@ TEST(Layout, AnonymousWithListInside) {
       "huehue <strong>brbr</strong> huehue"
     "</body>";
 
-
   const char* css_source =
     "body, h1, h2 { display: block; }"
     "span { display: inline; }";
@@ -144,8 +143,8 @@ TEST(Layout, AnonymousWithListInside) {
   cssdriver.parse_source(css_source);
   ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
 
-  ::StyledNode sn (htmldriver.dom, cssdriver.stylesheet);
-  LayoutBox body_layout (sn);
+  LayoutBox body_layout (std::make_shared<StyledNode>(htmldriver.dom,
+                                                 cssdriver.stylesheet));
 
   // body will have 2 blocks and 1 anonymous
   ASSERT_EQ(body_layout.children.size(), 3);

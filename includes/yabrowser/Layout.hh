@@ -59,9 +59,17 @@ public:
   BoxType type;
   Dimensions dimensions;
   LayoutBoxContainer children;
+  style::StyledChild styled_node;
 public:
-  LayoutBox(const style::StyledNode&, BoxType bt = BoxType::BlockNode);
+  LayoutBox(const style::StyledChild&, BoxType bt = BoxType::BlockNode);
   ~LayoutBox();
+
+  /* void calculate (const LayoutBox& parent); */
+
+  /* // block */
+  /* void calculate_block_layout(const LayoutBox& parent); */
+  /* void calculate_block_position(const LayoutBox& parent); */
+  /* void calculate_block_height(); */
 };
 
 }}; // ! ns yabrowser layout
