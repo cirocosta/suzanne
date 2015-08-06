@@ -160,6 +160,42 @@ TEST(Layout, AnonymousWithListInside)
   EXPECT_EQ(txt2_layout->type, BoxType::InlineNode);
 }
 
+TEST(Layout, DisplayNone)
+{
+  yahtml::HTMLDriver htmldriver;
+  yacss::CSSDriver cssdriver;
+
+  const char* html_source = "<!DOCTYPE html>"
+                            "<html>"
+                            " <head>"
+                            "  <title>My Title</title>"
+                            " </head>"
+                            " <body>"
+                            "   huehue brbr"
+                            " </body>"
+                            "</html>";
+
+  const char* css_source = "head { display: none; }"
+                           "body { display: block; }";
+
+  htmldriver.parse_source(html_source);
+  cssdriver.parse_source(css_source);
+  ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
+
+  LayoutBox html_layout(
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
+
+  // DOM structure contains head elem
+  ASSERT_EQ(htmldriver.dom->children.size(), 2);
+
+  // head will get out of the layouttree
+  ASSERT_EQ(html_layout.children.size(), 1);
+  LayoutBoxPtr& body_layout = html_layout.children.at(0);
+  EXPECT_EQ(body_layout->type, BoxType::BlockNode);
+  ASSERT_EQ(body_layout->children.size(), 1);
+  EXPECT_EQ(body_layout->children.at(0)->type, BoxType::InlineNode);
+}
+
 TEST(Layout, BodyWidth)
 {
   yahtml::HTMLDriver htmldriver;
