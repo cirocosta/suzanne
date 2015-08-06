@@ -76,20 +76,24 @@ void LayoutBox::calculate(const Dimensions& containing_block)
   if (this->type == BoxType::BlockNode) {
     calculate_block_layout(containing_block);
   } else if (this->type == BoxType::InlineNode) {
-    throw std::runtime_error("LayoutBox::calculate - inlinenode unsupported");
+    std::cerr << "LayoutBox::calculate - inlinenode unsupported" << std::endl;
   } else if (this->type == BoxType::AnonymousBlock) {
-    throw std::runtime_error("LayoutBox::calculate - anonblock unsupported");
+    std::cerr << "LayoutBox::calculate - anonblock unsupported" << std::endl;
   } else {
-    throw std::runtime_error("LayoutBox::calculate - unsupported");
+    std::cerr << "LayoutBox::calculate - unsupported" << std::endl;
   }
 }
 
 void LayoutBox::calculate_block_layout(const Dimensions& containing_block)
 {
   calculate_block_width(containing_block);
-  /* calculate_block_position(containing_block); */
-  /* for (const auto& child : children) */
-  /*   calculate(this->dimensions); */
+  calculate_block_position(containing_block);
+
+  for (const auto& child : children) {
+    child->calculate(this->dimensions);
+    this->dimensions.content.height += child->dimensions.margin_box().height;
+  }
+
   /* calculate_block_height(); */
 }
 
@@ -121,7 +125,6 @@ void LayoutBox::calculate_block_width(const Dimensions& parent)
   bool auto_width = width == auto_keyword;
   bool auto_margin_left = margin_left == auto_keyword;
   bool auto_margin_right = margin_right == auto_keyword;
-
 
   // if width is set to auto and there's an overflow,
   // any other 'auto' values become 0px
@@ -172,15 +175,44 @@ void LayoutBox::calculate_block_width(const Dimensions& parent)
     margin_right = LengthValue(underflow / 2, yacss::UNIT_PX);
   }
 
-  this->dimensions.content.width = to_px(width);
-  this->dimensions.padding.left = to_px(padding_left);
-  this->dimensions.padding.right = to_px(padding_right);
+  dimensions.content.width = to_px(width);
+  dimensions.padding.left = to_px(padding_left);
+  dimensions.padding.right = to_px(padding_right);
 
-  this->dimensions.border.left = to_px(border_left);
-  this->dimensions.border.right = to_px(border_right);
+  dimensions.border.left = to_px(border_left);
+  dimensions.border.right = to_px(border_right);
 
-  this->dimensions.margin.left = to_px(margin_left);
-  this->dimensions.margin.right = to_px(margin_right);
+  dimensions.margin.left = to_px(margin_left);
+  dimensions.margin.right = to_px(margin_right);
+}
+
+void LayoutBox::calculate_block_position(const Dimensions& parent)
+{
+  const CSSBaseValue zero_length = LengthValue(0, yacss::UNIT_PX);
+
+  dimensions.margin.top =
+      to_px(styled_node->decl_lookup({ "margin-top", "margin" }, zero_length));
+
+  dimensions.margin.bottom = to_px(
+      styled_node->decl_lookup({ "margin-bottom", "margin" }, zero_length));
+
+  dimensions.border.top = to_px(styled_node->decl_lookup(
+      { "border-top-width", "border-width" }, zero_length));
+  dimensions.border.top = to_px(styled_node->decl_lookup(
+      { "border-bottom-width", "border-width" }, zero_length));
+
+  dimensions.border.top = to_px(
+      styled_node->decl_lookup({ "padding-top", "padding" }, zero_length));
+  dimensions.border.top = to_px(
+      styled_node->decl_lookup({ "padding-bottom", "padding" }, zero_length));
+
+  dimensions.content.x = parent.content.x + dimensions.margin.left +
+                         dimensions.border.left + dimensions.padding.left;
+
+  // Position the box below all the previous boxes in the container.
+  dimensions.content.y = parent.content.height + parent.content.y +
+                         dimensions.margin.top + dimensions.border.top +
+                         dimensions.padding.top;
 }
 
 } // ! ns yabrowser

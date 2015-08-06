@@ -214,7 +214,7 @@ TEST(Layout, SingleFlatBodyWidth)
 
   LayoutBox body_layout(
       std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
-  Dimensions viewport(Rect(0.0, 0.0, 200.0, 200.0));
+  Dimensions viewport(Rect(0.0, 0.0, 200.0, 0.0));
   body_layout.calculate(viewport);
 
   EXPECT_EQ(body_layout.dimensions.content.width, 200);
@@ -240,12 +240,14 @@ TEST(Layout, SingleFlatBodyFixedWidthAutoMargin)
 
   LayoutBox body_layout(
       std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
-  Dimensions viewport(Rect(0.0, 0.0, 200.0, 200.0));
+  Dimensions viewport(Rect(0.0, 0.0, 200.0, 0.0));
   body_layout.calculate(viewport);
 
   EXPECT_EQ(body_layout.dimensions.content.width, 100);
   EXPECT_EQ(body_layout.dimensions.margin.left, 50);
   EXPECT_EQ(body_layout.dimensions.margin.right, 50);
+  EXPECT_EQ(body_layout.dimensions.content.x, 50);
+  EXPECT_EQ(body_layout.dimensions.content.y, 0);
 }
 
 TEST(Layout, SingleFlatBodyFixedWidthAutoMarginLeft)
@@ -268,7 +270,7 @@ TEST(Layout, SingleFlatBodyFixedWidthAutoMarginLeft)
 
   LayoutBox body_layout(
       std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
-  Dimensions viewport(Rect(0.0, 0.0, 200.0, 200.0));
+  Dimensions viewport(Rect(0.0, 0.0, 200.0, 0.0));
   body_layout.calculate(viewport);
 
   EXPECT_EQ(body_layout.dimensions.content.width, 100);
@@ -295,7 +297,7 @@ TEST(Layout, SingleFlatBodyOverflows)
 
   LayoutBox body_layout(
       std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
-  Dimensions viewport(Rect(0.0, 0.0, 200.0, 200.0));
+  Dimensions viewport(Rect(0.0, 0.0, 200.0, 0.0));
   body_layout.calculate(viewport);
 
   EXPECT_EQ(body_layout.dimensions.content.width, 400);
