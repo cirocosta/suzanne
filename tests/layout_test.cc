@@ -8,7 +8,8 @@ using namespace yabrowser::style;
 using namespace yacss;
 using namespace yabrowser::layout;
 
-TEST(Layout, SingleBlockElement) {
+TEST(Layout, SingleBlockElement)
+{
   /**
    * As any element contains at least an empty text we expect to have
    * a block box w/ an inline box inside
@@ -17,25 +18,24 @@ TEST(Layout, SingleBlockElement) {
   yahtml::HTMLDriver htmldriver;
   yacss::CSSDriver cssdriver;
 
-  const char * html_source =
-    "<h1></h1>";
-  const char * css_source =
-    "h1 { display: block; }";
+  const char* html_source = "<h1></h1>";
+  const char* css_source = "h1 { display: block; }";
 
   htmldriver.parse_source(html_source);
   cssdriver.parse_source(css_source);
 
   ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
 
-  LayoutBox layout (std::make_shared<StyledNode>(htmldriver.dom,
-                                                 cssdriver.stylesheet));
+  LayoutBox layout(
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
 
   EXPECT_EQ(layout.type, BoxType::BlockNode);
   EXPECT_EQ(layout.children.size(), 1);
   EXPECT_EQ(layout.children.at(0)->type, BoxType::InlineNode);
 }
 
-TEST(Layout, BlockWithInlineList) {
+TEST(Layout, BlockWithInlineList)
+{
   /**
    *    """
    *      A block container box either contains only block-level boxes or
@@ -46,22 +46,20 @@ TEST(Layout, BlockWithInlineList) {
   yahtml::HTMLDriver htmldriver;
   yacss::CSSDriver cssdriver;
 
-  const char * html_source =
-    "<ul>"
-      "<li></li>"
-      "<li></li>"
-    "</ul>";
-  const char * css_source =
-    "ul { display: block; }"
-    "li { display: inline; }";
+  const char* html_source = "<ul>"
+                            "<li></li>"
+                            "<li></li>"
+                            "</ul>";
+  const char* css_source = "ul { display: block; }"
+                           "li { display: inline; }";
 
   htmldriver.parse_source(html_source);
   cssdriver.parse_source(css_source);
 
   ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
 
-  LayoutBox ul_layout (std::make_shared<StyledNode>(htmldriver.dom,
-                                                 cssdriver.stylesheet));
+  LayoutBox ul_layout(
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
 
   EXPECT_EQ(ul_layout.type, BoxType::BlockNode);
   EXPECT_EQ(ul_layout.children.size(), 2);
@@ -80,7 +78,8 @@ TEST(Layout, BlockWithInlineList) {
   EXPECT_EQ(li1_layout->children.at(0)->type, BoxType::InlineNode);
 }
 
-TEST(Layout, SimpleAnonymous) {
+TEST(Layout, SimpleAnonymous)
+{
   /*
    * If a block container box has a block-level box inside it, then force
    * it to have only block-level boxes inside it (use anonymous boxes).
@@ -88,23 +87,20 @@ TEST(Layout, SimpleAnonymous) {
   yahtml::HTMLDriver htmldriver;
   yacss::CSSDriver cssdriver;
 
-  const char* html_source =
-    "<body>"
-      "<span></span>"
-      "<h1></h1>"
-    "</body>";
+  const char* html_source = "<body>"
+                            "<span></span>"
+                            "<h1></h1>"
+                            "</body>";
 
-
-  const char* css_source =
-    "body, h1 { display: block; }"
-    "span { display: inline; }";
+  const char* css_source = "body, h1 { display: block; }"
+                           "span { display: inline; }";
 
   htmldriver.parse_source(html_source);
   cssdriver.parse_source(css_source);
   ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
 
-  LayoutBox body_layout (std::make_shared<StyledNode>(htmldriver.dom,
-                                                 cssdriver.stylesheet));
+  LayoutBox body_layout(
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
 
   ASSERT_EQ(body_layout.type, BoxType::BlockNode);
   ASSERT_EQ(body_layout.children.size(), 2);
@@ -123,28 +119,26 @@ TEST(Layout, SimpleAnonymous) {
   EXPECT_EQ(h1_layout->children.at(0)->type, BoxType::InlineNode);
 }
 
-
-TEST(Layout, AnonymousWithListInside) {
+TEST(Layout, AnonymousWithListInside)
+{
   yahtml::HTMLDriver htmldriver;
   yacss::CSSDriver cssdriver;
 
-  const char* html_source =
-    "<body>"
-      "<h1></h1>"
-      "<h2></h2>"
-      "huehue <strong>brbr</strong> huehue"
-    "</body>";
+  const char* html_source = "<body>"
+                            "<h1></h1>"
+                            "<h2></h2>"
+                            "huehue <strong>brbr</strong> huehue"
+                            "</body>";
 
-  const char* css_source =
-    "body, h1, h2 { display: block; }"
-    "span { display: inline; }";
+  const char* css_source = "body, h1, h2 { display: block; }"
+                           "span { display: inline; }";
 
   htmldriver.parse_source(html_source);
   cssdriver.parse_source(css_source);
   ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
 
-  LayoutBox body_layout (std::make_shared<StyledNode>(htmldriver.dom,
-                                                 cssdriver.stylesheet));
+  LayoutBox body_layout(
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
 
   // body will have 2 blocks and 1 anonymous
   ASSERT_EQ(body_layout.children.size(), 3);
@@ -166,3 +160,26 @@ TEST(Layout, AnonymousWithListInside) {
   EXPECT_EQ(txt2_layout->type, BoxType::InlineNode);
 }
 
+TEST(Layout, BodyWidth)
+{
+  yahtml::HTMLDriver htmldriver;
+  yacss::CSSDriver cssdriver;
+
+  const char* html_source = "<body>"
+                            "</body>";
+
+  const char* css_source = "body {"
+                           "  display: block "
+                           "}";
+
+  htmldriver.parse_source(html_source);
+  cssdriver.parse_source(css_source);
+  ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
+
+  LayoutBox body_layout(
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
+  Dimensions viewport(Rect(0.0, 0.0, 200.0, 200.0));
+  body_layout.calculate(viewport);
+
+  EXPECT_EQ(body_layout.dimensions.content.width, 200);
+}

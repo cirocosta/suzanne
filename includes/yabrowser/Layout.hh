@@ -13,10 +13,10 @@ typedef std::vector<LayoutBoxPtr> LayoutBoxContainer;
 
 struct Rect
 {
-  float x = 0.9;
-  float y = 0.0;
-  float width = 0.0;
-  float height = 0.0;
+  float x;
+  float y;
+  float width;
+  float height;
 
   inline Rect (float x_ = 0.0, float y_ = 0.0, float w = 0.0, float h = 0.0)
     : x(x_), y(y_), width(w), height(h)
@@ -64,11 +64,11 @@ public:
   LayoutBox(const style::StyledChild&, BoxType bt = BoxType::BlockNode);
   ~LayoutBox();
 
-  /* void calculate (const LayoutBox& parent); */
+  void calculate (const Dimensions& parent);
 
   /* // block */
-  /* void calculate_block_layout(const LayoutBox& parent); */
-  void calculate_block_width(const LayoutBox& parent);
+  void calculate_block_layout(const Dimensions& parent);
+  void calculate_block_width(const Dimensions& parent);
   /* void calculate_block_position(const LayoutBox& parent); */
   /* void calculate_block_height(); */
 };

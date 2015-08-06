@@ -212,7 +212,7 @@ TEST(SpecifiedValues, DeclarationLookup) {
   StyledChild& h2_style = sn.children.at(1);
 
   // default values
-  const CSSBaseValue zero_length = LengthValue(0, "px");
+  const CSSBaseValue zero_length = LengthValue(0, yacss::UNIT_PX);
   const CSSBaseValue auto_keyword = KeywordValue("auto");
 
   // margin - both specified by the shorthand
