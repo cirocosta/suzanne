@@ -122,6 +122,7 @@ void LayoutBox::calculate_block_width(const Dimensions& parent)
   bool auto_margin_left = margin_left == auto_keyword;
   bool auto_margin_right = margin_right == auto_keyword;
 
+
   // if width is set to auto and there's an overflow,
   // any other 'auto' values become 0px
   if (auto_width && total > parent.content.width) {
@@ -129,23 +130,23 @@ void LayoutBox::calculate_block_width(const Dimensions& parent)
       margin_left = zero_length;
 
     if (margin_right.type == ValueType::Keyword)
-      margin_left = zero_length;
+      margin_right = zero_length;
   }
 
   float underflow = parent.content.width - total;
 
   // =auto: (w : false, mr: false, ml: false)
-  if (!(auto_width && auto_margin_right && auto_margin_left)) {
+  if (!auto_width && !auto_margin_right && !auto_margin_left) {
     margin_right = LengthValue(to_px(margin_right) + underflow, yacss::UNIT_PX);
   }
 
   // =auto: (w : false, mr: false, ml: true)
-  if (!auto_width && !auto_margin_right && auto_margin_left) {
+  else if (!auto_width && !auto_margin_right && auto_margin_left) {
     margin_left = LengthValue(underflow, yacss::UNIT_PX);
   }
 
   // =auto: (w : false, mr: true, ml: false)
-  if (!auto_width && auto_margin_right && !auto_margin_left) {
+  else if (!auto_width && auto_margin_right && !auto_margin_left) {
     margin_right = LengthValue(underflow, yacss::UNIT_PX);
   }
 

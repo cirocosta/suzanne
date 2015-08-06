@@ -196,7 +196,7 @@ TEST(Layout, DisplayNone)
   EXPECT_EQ(body_layout->children.at(0)->type, BoxType::InlineNode);
 }
 
-TEST(Layout, BodyWidth)
+TEST(Layout, SingleFlatBodyWidth)
 {
   yahtml::HTMLDriver htmldriver;
   yacss::CSSDriver cssdriver;
@@ -218,4 +218,87 @@ TEST(Layout, BodyWidth)
   body_layout.calculate(viewport);
 
   EXPECT_EQ(body_layout.dimensions.content.width, 200);
+}
+
+TEST(Layout, SingleFlatBodyFixedWidthAutoMargin)
+{
+  yahtml::HTMLDriver htmldriver;
+  yacss::CSSDriver cssdriver;
+
+  const char* html_source = "<body>"
+                            "</body>";
+
+  const char* css_source = "body {"
+                           "  display: block;"
+                           "  width: 100px;"
+                           "  margin: auto"
+                           "}";
+
+  htmldriver.parse_source(html_source);
+  cssdriver.parse_source(css_source);
+  ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
+
+  LayoutBox body_layout(
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
+  Dimensions viewport(Rect(0.0, 0.0, 200.0, 200.0));
+  body_layout.calculate(viewport);
+
+  EXPECT_EQ(body_layout.dimensions.content.width, 100);
+  EXPECT_EQ(body_layout.dimensions.margin.left, 50);
+  EXPECT_EQ(body_layout.dimensions.margin.right, 50);
+}
+
+TEST(Layout, SingleFlatBodyFixedWidthAutoMarginLeft)
+{
+  yahtml::HTMLDriver htmldriver;
+  yacss::CSSDriver cssdriver;
+
+  const char* html_source = "<body>"
+                            "</body>";
+
+  const char* css_source = "body {"
+                           "  display: block;"
+                           "  width: 100px;"
+                           "  margin-left: auto"
+                           "}";
+
+  htmldriver.parse_source(html_source);
+  cssdriver.parse_source(css_source);
+  ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
+
+  LayoutBox body_layout(
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
+  Dimensions viewport(Rect(0.0, 0.0, 200.0, 200.0));
+  body_layout.calculate(viewport);
+
+  EXPECT_EQ(body_layout.dimensions.content.width, 100);
+  EXPECT_EQ(body_layout.dimensions.margin.left, 100);
+  EXPECT_EQ(body_layout.dimensions.margin.right, 0);
+}
+
+TEST(Layout, SingleFlatBodyOverflows)
+{
+  yahtml::HTMLDriver htmldriver;
+  yacss::CSSDriver cssdriver;
+
+  const char* html_source = "<body>"
+                            "</body>";
+
+  const char* css_source = "body {"
+                           "  display: block;"
+                           "  width: 400px;"
+                           "}";
+
+  htmldriver.parse_source(html_source);
+  cssdriver.parse_source(css_source);
+  ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
+
+  LayoutBox body_layout(
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
+  Dimensions viewport(Rect(0.0, 0.0, 200.0, 200.0));
+  body_layout.calculate(viewport);
+
+  EXPECT_EQ(body_layout.dimensions.content.width, 400);
+  EXPECT_EQ(body_layout.dimensions.margin.left, 0);
+  EXPECT_EQ(body_layout.dimensions.margin.right, -200);
 }
