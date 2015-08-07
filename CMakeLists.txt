@@ -53,7 +53,9 @@ set(${PROJECT_NAME}_LIBS ${LIBS}
 #     --    testing
 
 if (test)
+  add_subdirectory(lib/googletest)
   enable_testing()
+  include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
   add_subdirectory(tests/)
 endif(test)
 

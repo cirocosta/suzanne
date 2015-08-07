@@ -7,3 +7,6 @@
 [submodule "lib/yacss-parser"]
 	path = lib/yacss-parser
 	url = https://github.com/cirocosta/yacss-parser.git
+[submodule "lib/googletest"]
+	path = lib/googletest
+	url = https://github.com/cirocosta/googletest.git
