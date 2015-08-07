@@ -6,6 +6,7 @@ option(test "Include Tests." OFF)
 set(PROJECT_NAME yabrowser)
 project(${PROJECT_NAME} C CXX)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+set(BUILD_SHARED_LIBS ON)
 
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
