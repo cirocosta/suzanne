@@ -331,7 +331,7 @@ TEST(BlockLayout, FlatBodyChildrenFixedWidthAutoMargin)
 
   LayoutBox body_layout(
       std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet),
-      Dimensions(Rect(0.0, 0.0, 200.0, 0.0)));
+      Dimensions(Rect(0.0, 0.0, 200.0, 200.0)));
   body_layout.calculate();
 
   EXPECT_EQ(body_layout.dimensions.content.width, 100);

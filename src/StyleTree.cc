@@ -48,8 +48,10 @@ bool selector_matches (const yacss::Selector& sel, const yahtml::Element& elem)
 {
   yahtml::AttrMap::const_iterator it;
 
-  if (!(sel.tag.empty()) && sel.tag != elem.tag_name)
-    return false;
+  if (!sel.tag.empty()) {
+    if (sel.tag != "*" && sel.tag != elem.tag_name)
+      return false;
+  }
 
   if (!(sel.id.empty())) {
     it = elem.attr_map.find("id");
@@ -87,7 +89,7 @@ std::vector<MatchedRule> matching_rules (const Stylesheet& ss,
   for (const auto& rule : ss.rules) {
     MatchedRule matched_rule = rule_matches(rule, elem);
 
-    if (!matched_rule.second)
+    if (!matched_rule.first)
       continue;
 
     rules_matched.push_back(matched_rule);
