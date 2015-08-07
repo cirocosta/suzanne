@@ -94,7 +94,7 @@ public:
   void calculate_block_layout();
   void calculate_block_width();
   void calculate_block_position();
-  /* void calculate_block_height(); */
+  void calculate_block_height();
 private:
   void _init_tree();
 };

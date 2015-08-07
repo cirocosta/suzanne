@@ -196,7 +196,7 @@ TEST(Layout, DisplayNone)
   EXPECT_EQ(body_layout->children.at(0)->type, BoxType::InlineNode);
 }
 
-TEST(Layout, SingleFlatBodyWidth)
+TEST(BlockLayout, SingleFlatBodyWidth)
 {
   yahtml::HTMLDriver htmldriver;
   yacss::CSSDriver cssdriver;
@@ -222,7 +222,7 @@ TEST(Layout, SingleFlatBodyWidth)
   EXPECT_EQ(body_layout.dimensions.content.y, 0.0);
 }
 
-TEST(Layout, SingleFlatBodyFixedWidthAutoMargin)
+TEST(BlockLayout, SingleFlatBodyFixedWidthAutoMargin)
 {
   yahtml::HTMLDriver htmldriver;
   yacss::CSSDriver cssdriver;
@@ -252,7 +252,7 @@ TEST(Layout, SingleFlatBodyFixedWidthAutoMargin)
   EXPECT_EQ(body_layout.dimensions.content.y, 0);
 }
 
-TEST(Layout, SingleFlatBodyFixedWidthAutoMarginLeft)
+TEST(BlockLayout, SingleFlatBodyFixedWidthAutoMarginLeft)
 {
   yahtml::HTMLDriver htmldriver;
   yacss::CSSDriver cssdriver;
@@ -280,7 +280,7 @@ TEST(Layout, SingleFlatBodyFixedWidthAutoMarginLeft)
   EXPECT_EQ(body_layout.dimensions.margin.right, 0);
 }
 
-TEST(Layout, SingleFlatBodyOverflows)
+TEST(BlockLayout, SingleFlatBodyOverflows)
 {
   yahtml::HTMLDriver htmldriver;
   yacss::CSSDriver cssdriver;
@@ -305,4 +305,52 @@ TEST(Layout, SingleFlatBodyOverflows)
   EXPECT_EQ(body_layout.dimensions.content.width, 400);
   EXPECT_EQ(body_layout.dimensions.margin.left, 0);
   EXPECT_EQ(body_layout.dimensions.margin.right, -200);
+}
+
+TEST(BlockLayout, FlatBodyChildrenFixedWidthAutoMargin)
+{
+  yahtml::HTMLDriver htmldriver;
+  yacss::CSSDriver cssdriver;
+
+  const char* html_source = "<body>"
+                            "  <h1></h1>"
+                            "  <h1></h1>"
+                            "  <h1></h1>"
+                            "</body>";
+
+  const char* css_source = "body, h1 { display: block; }"
+                           "h1 { height: 10px }"
+                           "body {"
+                           "  display: block;"
+                           "  width: 100px;"
+                           "}";
+
+  htmldriver.parse_source(html_source);
+  cssdriver.parse_source(css_source);
+  ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
+
+  LayoutBox body_layout(
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet),
+      Dimensions(Rect(0.0, 0.0, 200.0, 0.0)));
+  body_layout.calculate();
+
+  EXPECT_EQ(body_layout.dimensions.content.width, 100);
+  EXPECT_EQ(body_layout.dimensions.margin.left, 0);
+  EXPECT_EQ(body_layout.dimensions.margin.right, 100);
+  EXPECT_EQ(body_layout.dimensions.content.x, 0);
+  EXPECT_EQ(body_layout.dimensions.content.y, 0);
+
+  ASSERT_EQ(body_layout.children.size(), 3);
+  const LayoutBoxPtr& h1_1 = body_layout.children.at(0);
+  const LayoutBoxPtr& h1_2 = body_layout.children.at(1);
+  const LayoutBoxPtr& h1_3 = body_layout.children.at(2);
+
+  ASSERT_EQ(h1_1->styled_node->specified_values.size(), 2);
+  ASSERT_EQ(h1_1->styled_node->get_value<LengthValue>("height")->type,
+            ValueType::Length);
+  ASSERT_EQ(h1_1->styled_node->get_value<LengthValue>("height")->val, 10.0);
+  EXPECT_EQ(h1_1->dimensions.content.width, 100);
+  EXPECT_EQ(h1_1->dimensions.content.height, 10);
+
+  EXPECT_EQ(body_layout.dimensions.content.height, 30);
 }

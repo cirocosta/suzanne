@@ -118,7 +118,7 @@ void LayoutBox::calculate_block_layout()
     this->dimensions.content.height += child->dimensions.margin_box().height;
   }
 
-  /* calculate_block_height(); */
+  calculate_block_height();
 }
 
 void LayoutBox::calculate_block_width()
@@ -237,6 +237,15 @@ void LayoutBox::calculate_block_position()
   dimensions.content.y = parent->dimensions.content.height +
                          parent->dimensions.content.y + dimensions.margin.top +
                          dimensions.border.top + dimensions.padding.top;
+}
+
+void LayoutBox::calculate_block_height()
+{
+  const LengthValue* height = this->styled_node->get_value<LengthValue>("height");
+
+  if (height) {
+    this->dimensions.content.height = height->val;
+  }
 }
 
 } // ! ns yabrowser
