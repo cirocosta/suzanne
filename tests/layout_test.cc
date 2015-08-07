@@ -318,11 +318,12 @@ TEST(BlockLayout, FlatBodyChildrenFixedWidthAutoMargin)
                             "  <h1></h1>"
                             "</body>";
 
-  const char* css_source = "body, h1 { display: block; }"
+  const char* css_source = "* { display: block; }"
                            "h1 { height: 10px }"
-                           "body {"
-                           "  display: block;"
-                           "  width: 100px;"
+                           "body { "
+                           "  width: 100px; "
+                           "  padding-top: 10px; "
+                           "  padding-left: 10px; "
                            "}";
 
   htmldriver.parse_source(html_source);
@@ -336,8 +337,8 @@ TEST(BlockLayout, FlatBodyChildrenFixedWidthAutoMargin)
 
   EXPECT_EQ(body_layout.dimensions.content.width, 100);
   EXPECT_EQ(body_layout.dimensions.margin.left, 0);
-  EXPECT_EQ(body_layout.dimensions.margin.right, 100);
-  EXPECT_EQ(body_layout.dimensions.content.x, 0);
+  EXPECT_EQ(body_layout.dimensions.margin.right, 90);
+  EXPECT_EQ(body_layout.dimensions.content.x, 10);
   EXPECT_EQ(body_layout.dimensions.content.y, 0);
 
   ASSERT_EQ(body_layout.children.size(), 3);
@@ -351,6 +352,14 @@ TEST(BlockLayout, FlatBodyChildrenFixedWidthAutoMargin)
   ASSERT_EQ(h1_1->styled_node->get_value<LengthValue>("height")->val, 10.0);
   EXPECT_EQ(h1_1->dimensions.content.width, 100);
   EXPECT_EQ(h1_1->dimensions.content.height, 10);
+  EXPECT_EQ(h1_1->dimensions.content.x, 10);
+  EXPECT_EQ(h1_1->dimensions.content.y, 0);
+
+  EXPECT_EQ(h1_2->dimensions.content.x, 10);
+  EXPECT_EQ(h1_2->dimensions.content.y, 10);
+
+  EXPECT_EQ(h1_3->dimensions.content.x, 10);
+  EXPECT_EQ(h1_3->dimensions.content.y, 20);
 
   EXPECT_EQ(body_layout.dimensions.content.height, 30);
 }
