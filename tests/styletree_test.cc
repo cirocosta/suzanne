@@ -239,7 +239,7 @@ TEST(MatchingRules, OneRuleMultipleSelectors) {
 
 TEST(SpecifiedValues, ClassSelector) {
   yahtml::HTMLDriver htmldriver;
-  yacss::CSSDriver cssdriver (true, true);
+  yacss::CSSDriver cssdriver;
 
   const char* html_source =
     "<body>"

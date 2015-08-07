@@ -17,49 +17,73 @@ inline float to_px(const yacss::CSSBaseValue& value)
 using namespace style;
 using namespace yacss;
 
-LayoutBox::LayoutBox(const StyledChild& sn, const BoxType bt)
-    : type(bt), dimensions(Dimensions()), children(LayoutBoxContainer())
+
+// ROOT
+LayoutBox::LayoutBox(const StyledChild& sn, Dimensions initial_dimensions)
+    : type(BoxType::BlockNode),
+      dimensions(initial_dimensions),
+      children(LayoutBoxContainer()),
+      styled_node(sn),
+      parent(this)
+{
+  dimensions.content.height = 0.0;
+
+  _init_tree();
+}
+
+// NODE or LEAF
+LayoutBox::LayoutBox(const StyledChild& sn, const BoxType bt, LayoutBox* lbp)
+    : type(bt),
+      dimensions(Dimensions()),
+      children(LayoutBoxContainer()),
+      parent(lbp)
 {
   if (type == BoxType::AnonymousBlock)
     return;
 
+  styled_node = sn;
+  _init_tree();
+}
+
+// BUILD
+void LayoutBox::_init_tree()
+{
   bool has_block = false;
   bool constructed_anon = false;
   LayoutBoxContainer::const_iterator last_anon_it;
-  styled_node = sn;
 
-  for (const auto& child : sn->children) {
+  for (const auto& child : styled_node->children) {
     if (child->display == DISPLAY_BLOCK) {
       has_block = true;
       break;
     }
   }
 
-  for (const auto& child : sn->children) {
+  for (const auto& child : styled_node->children) {
     switch (child->display) {
       case DISPLAY_INLINE:
         if (!has_block) {
           children.push_back(
-              std::make_shared<LayoutBox>(child, BoxType::InlineNode));
+              std::make_shared<LayoutBox>(child, BoxType::InlineNode, this));
 
           continue;
         }
 
         if (!constructed_anon) {
-          children.push_back(
-              std::make_shared<LayoutBox>(child, BoxType::AnonymousBlock));
+          children.push_back(std::make_shared<LayoutBox>(
+              child, BoxType::AnonymousBlock, this));
           last_anon_it = children.end() - 1;
           constructed_anon = true;
         }
 
         (*last_anon_it)
             ->children.push_back(
-                std::make_shared<LayoutBox>(child, BoxType::InlineNode));
+                std::make_shared<LayoutBox>(child, BoxType::InlineNode, this));
         break;
 
       case DISPLAY_BLOCK:
         children.push_back(
-            std::make_shared<LayoutBox>(child, BoxType::BlockNode));
+            std::make_shared<LayoutBox>(child, BoxType::BlockNode, this));
         constructed_anon = false;
         break;
 
@@ -71,10 +95,10 @@ LayoutBox::LayoutBox(const StyledChild& sn, const BoxType bt)
 
 LayoutBox::~LayoutBox() {}
 
-void LayoutBox::calculate(const Dimensions& containing_block)
+void LayoutBox::calculate()
 {
   if (this->type == BoxType::BlockNode) {
-    calculate_block_layout(containing_block);
+    calculate_block_layout();
   } else if (this->type == BoxType::InlineNode) {
     std::cerr << "LayoutBox::calculate - inlinenode unsupported" << std::endl;
   } else if (this->type == BoxType::AnonymousBlock) {
@@ -84,20 +108,20 @@ void LayoutBox::calculate(const Dimensions& containing_block)
   }
 }
 
-void LayoutBox::calculate_block_layout(const Dimensions& containing_block)
+void LayoutBox::calculate_block_layout()
 {
-  calculate_block_width(containing_block);
-  calculate_block_position(containing_block);
+  calculate_block_width();
+  calculate_block_position();
 
   for (const auto& child : children) {
-    child->calculate(this->dimensions);
+    child->calculate();
     this->dimensions.content.height += child->dimensions.margin_box().height;
   }
 
   /* calculate_block_height(); */
 }
 
-void LayoutBox::calculate_block_width(const Dimensions& parent)
+void LayoutBox::calculate_block_width()
 {
   const CSSBaseValue zero_length = LengthValue(0, yacss::UNIT_PX);
   const CSSBaseValue auto_keyword = KeywordValue("auto");
@@ -128,7 +152,7 @@ void LayoutBox::calculate_block_width(const Dimensions& parent)
 
   // if width is set to auto and there's an overflow,
   // any other 'auto' values become 0px
-  if (auto_width && total > parent.content.width) {
+  if (auto_width && total > parent->dimensions.content.width) {
     if (margin_left.type == ValueType::Keyword)
       margin_left = zero_length;
 
@@ -136,7 +160,7 @@ void LayoutBox::calculate_block_width(const Dimensions& parent)
       margin_right = zero_length;
   }
 
-  float underflow = parent.content.width - total;
+  float underflow = parent->dimensions.content.width - total;
 
   // =auto: (w : false, mr: false, ml: false)
   if (!auto_width && !auto_margin_right && !auto_margin_left) {
@@ -186,7 +210,7 @@ void LayoutBox::calculate_block_width(const Dimensions& parent)
   dimensions.margin.right = to_px(margin_right);
 }
 
-void LayoutBox::calculate_block_position(const Dimensions& parent)
+void LayoutBox::calculate_block_position()
 {
   const CSSBaseValue zero_length = LengthValue(0, yacss::UNIT_PX);
 
@@ -206,13 +230,13 @@ void LayoutBox::calculate_block_position(const Dimensions& parent)
   dimensions.border.top = to_px(
       styled_node->decl_lookup({ "padding-bottom", "padding" }, zero_length));
 
-  dimensions.content.x = parent.content.x + dimensions.margin.left +
+  dimensions.content.x = parent->dimensions.content.x + dimensions.margin.left +
                          dimensions.border.left + dimensions.padding.left;
 
   // Position the box below all the previous boxes in the container.
-  dimensions.content.y = parent.content.height + parent.content.y +
-                         dimensions.margin.top + dimensions.border.top +
-                         dimensions.padding.top;
+  dimensions.content.y = parent->dimensions.content.height +
+                         parent->dimensions.content.y + dimensions.margin.top +
+                         dimensions.border.top + dimensions.padding.top;
 }
 
 } // ! ns yabrowser

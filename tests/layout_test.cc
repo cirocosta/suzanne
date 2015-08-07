@@ -213,11 +213,13 @@ TEST(Layout, SingleFlatBodyWidth)
   ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
 
   LayoutBox body_layout(
-      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
-  Dimensions viewport(Rect(0.0, 0.0, 200.0, 0.0));
-  body_layout.calculate(viewport);
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet),
+      Dimensions(Rect(0.0, 0.0, 200.0, 200.0)));
+  body_layout.calculate();
 
   EXPECT_EQ(body_layout.dimensions.content.width, 200);
+  EXPECT_EQ(body_layout.dimensions.content.x, 0.0);
+  EXPECT_EQ(body_layout.dimensions.content.y, 0.0);
 }
 
 TEST(Layout, SingleFlatBodyFixedWidthAutoMargin)
@@ -239,9 +241,9 @@ TEST(Layout, SingleFlatBodyFixedWidthAutoMargin)
   ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
 
   LayoutBox body_layout(
-      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
-  Dimensions viewport(Rect(0.0, 0.0, 200.0, 0.0));
-  body_layout.calculate(viewport);
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet),
+      Dimensions(Rect(0.0, 0.0, 200.0, 0.0)));
+  body_layout.calculate();
 
   EXPECT_EQ(body_layout.dimensions.content.width, 100);
   EXPECT_EQ(body_layout.dimensions.margin.left, 50);
@@ -269,9 +271,9 @@ TEST(Layout, SingleFlatBodyFixedWidthAutoMarginLeft)
   ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
 
   LayoutBox body_layout(
-      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
-  Dimensions viewport(Rect(0.0, 0.0, 200.0, 0.0));
-  body_layout.calculate(viewport);
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet),
+      Dimensions(Rect(0.0, 0.0, 200.0, 0.0)));
+  body_layout.calculate();
 
   EXPECT_EQ(body_layout.dimensions.content.width, 100);
   EXPECT_EQ(body_layout.dimensions.margin.left, 100);
@@ -296,9 +298,9 @@ TEST(Layout, SingleFlatBodyOverflows)
   ASSERT_EQ(htmldriver.result + cssdriver.result, 0);
 
   LayoutBox body_layout(
-      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet));
-  Dimensions viewport(Rect(0.0, 0.0, 200.0, 0.0));
-  body_layout.calculate(viewport);
+      std::make_shared<StyledNode>(htmldriver.dom, cssdriver.stylesheet),
+      Dimensions(Rect(0.0, 0.0, 200.0, 0.0)));
+  body_layout.calculate();
 
   EXPECT_EQ(body_layout.dimensions.content.width, 400);
   EXPECT_EQ(body_layout.dimensions.margin.left, 0);

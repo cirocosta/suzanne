@@ -35,18 +35,17 @@ struct Rect {
   float width;
   float height;
 
-  constexpr Rect(float x_ = 0.0, float y_ = 0.0, float w = 0.0, float h = 0.0)
+  inline Rect(float x_ = 0.0, float y_ = 0.0, float w = 0.0, float h = 0.0)
       : x(x_), y(y_), width(w), height(h)
   {
   }
 
-  constexpr Rect expanded_by(const EdgeSizes& edge) const
+  inline Rect expanded_by(const EdgeSizes& edge) const
   {
     return Rect(x - edge.left, y - edge.top, width + edge.left + edge.right,
                 height + edge.top + edge.bottom);
   }
 };
-
 
 struct Dimensions {
   Rect content;
@@ -60,20 +59,14 @@ struct Dimensions {
   {
   }
 
-  constexpr Rect padding_box () const
-  {
-    return content.expanded_by(padding);
-  }
+  inline Rect padding_box() const { return content.expanded_by(padding); }
 
-  constexpr Rect border_box () const
+  inline Rect border_box() const
   {
     return padding_box().expanded_by(border);
   }
 
-  constexpr Rect margin_box () const
-  {
-    return border_box().expanded_by(margin);
-  }
+  inline Rect margin_box() const { return border_box().expanded_by(margin); }
 };
 
 enum class BoxType { BlockNode, InlineNode, AnonymousBlock };
@@ -85,20 +78,27 @@ public:
   Dimensions dimensions;
   LayoutBoxContainer children;
   style::StyledChild styled_node;
+  LayoutBox* parent;
 
 public:
-  LayoutBox(const style::StyledChild&, BoxType bt = BoxType::BlockNode);
+  LayoutBox(const style::StyledChild&, Dimensions dim = Dimensions());
+  LayoutBox(const style::StyledChild&, BoxType bt, LayoutBox* lbp);
   ~LayoutBox();
 
-  void calculate(const Dimensions& parent);
+  LayoutBox(const LayoutBox&) = delete;
+  const LayoutBox& operator=(const LayoutBox&) = delete;
+
+  void calculate();
 
   /* // block */
-  void calculate_block_layout(const Dimensions& parent);
-  void calculate_block_width(const Dimensions& parent);
-  void calculate_block_position(const Dimensions& parent);
+  void calculate_block_layout();
+  void calculate_block_width();
+  void calculate_block_position();
   /* void calculate_block_height(); */
+private:
+  void _init_tree();
 };
-}
-}; // ! ns yabrowser layout
+}  // ! ns yabrowser
+}; // ! ns layout
 
 #endif
